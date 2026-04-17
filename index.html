@@ -211,10 +211,10 @@
 
     // --- Home (Ranking) ---
     function renderHome() {
-      // 1. 全記事を計算してソート (sliceなし)
+      // 全記事を計算してソート (sliceなし)
       const ranking = DB.articles.map(a => ({ ...a, count: DB.links.filter(l => l.target === a.id).length })).sort((a,b) => b.count - a.count);
       
-      // 2. 全件表示 (clickable-row クラスと onclick を追加)
+      // 全件表示 (clickable-row クラスと onclick を追加)
       document.getElementById('home-ranking').innerHTML = ranking.map((a, i) => `
         <tr onclick="openArticleEditModal('${a.id}')" class="border-b last:border-0 clickable-row">
           <td class="py-3 pl-2 font-bold ${i<3?'text-yellow-600':'text-gray-500'}">#${i+1}</td>
