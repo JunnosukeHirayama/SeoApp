@@ -187,14 +187,14 @@
     let editingLinkId = null;
 
     window.onload = loadData;
-
+// 画面切り替え機能
     function router(page) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
       document.getElementById('view-' + page).classList.remove('hidden');
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       document.getElementById('btn-' + page).classList.add('active');
     }
-
+// データの読み込み
     function loadData() {
       document.getElementById('loader').classList.remove('hidden');
       google.script.run.withSuccessHandler(data => {
@@ -222,7 +222,7 @@
           <td class="py-3 text-right pr-2 font-bold text-blue-600">${a.count}</td>
         </tr>`).join('');
     }
-
+// 新規記事の登録処理
     function addArticle() {
       const t = document.getElementById('new-title').value; const u = document.getElementById('new-url').value;
       if(!t) return alert("入力してください");
@@ -233,7 +233,7 @@
       }).addArticle(t, u);
     }
 
-    // Links View
+    // 内部リンク設定画面の作成
     function renderLinksView(articles = DB.articles) {
       document.getElementById('links-grid').innerHTML = articles.map(a => {
         const out = DB.links.filter(l => l.source === a.id).length;
@@ -243,11 +243,12 @@
         </div>`;
       }).join('');
     }
+    // 内部リンク画面の検索機能
     function filterLinksGrid() {
       const term = document.getElementById('links-search-box').value.toLowerCase();
       renderLinksView(DB.articles.filter(a => a.title.toLowerCase().includes(term)||a.url.toLowerCase().includes(term)));
     }
-
+　　// リンク設定のポップアップ
     function openLinkModal(id) {
       if (!id) return alert("ID不正");
       editingLinkId = id;
@@ -269,14 +270,14 @@
       }).join('');
       document.getElementById('modal-link').classList.remove('hidden');
     }
-
+　　// ポップアップ内の検索機能
     function filterLinkModal() {
       const term = document.getElementById('modal-link-search').value.toLowerCase();
       document.querySelectorAll('#modal-link-list .chk-wrapper').forEach(el => {
         el.style.display = el.innerText.toLowerCase().includes(term) ? 'flex' : 'none';
       });
     }
-
+// チェックしたリンクを保存（GASへ送信）する
     function submitLinks() {
       if(!editingLinkId) return alert("Error");
       const sId = editingLinkId;
@@ -289,7 +290,7 @@
         .saveInternalLinks(sId, tIds);
     }
 
-    // Clusters View
+    // クラスター画面の作成
     function renderClusters() {
       const listEl = document.getElementById('clusters-list');
       if(DB.clusters.length === 0) { listEl.innerHTML = '<div class="text-center text-gray-400 py-10 bg-white rounded border">トピッククラスターが設定されていません</div>'; return; }
@@ -377,7 +378,7 @@
       google.script.run.withSuccessHandler(res => { loadData(); alert(res); }).deleteCluster(id);
     }
 
-    // List View
+    // 全記事一覧画面
     function renderListView(list = DB.articles) {
       document.getElementById('full-list-body').innerHTML = list.map(a => {
         const outC = DB.links.filter(l => l.source === a.id).length; const inC = DB.links.filter(l => l.target === a.id).length;
@@ -389,9 +390,10 @@
       }).join('');
       document.getElementById('list-count').textContent = `${list.length} 件`;
     }
+    // 全記事一覧の検索機能
     function filterList() { const t = document.getElementById('search-box').value.toLowerCase(); const f = DB.articles.filter(a => a.title.toLowerCase().includes(t)||a.url.toLowerCase().includes(t)); renderListView(f); }
 
-    // Article Detail
+    // 記事の詳細・編集
     function openArticleEditModal(id) {
       const art = DB.articles.find(a => a.id === id);
       if(!art) return;
@@ -418,7 +420,7 @@
 
       document.getElementById('modal-article-edit').classList.remove('hidden');
     }
-
+　　// 記事の更新（GASへの送信）
     function submitUpdateArticle() {
       const id = document.getElementById('edit-id').value;
       const title = document.getElementById('edit-title').value;
@@ -430,7 +432,7 @@
         .withFailureHandler(e => { alert(e); document.getElementById('loader').classList.add('hidden'); })
         .updateArticle(id, title, url);
     }
-
+　　// 記事の削除（GASへの送信）
     function submitDeleteArticle() {
       if(!confirm("この記事を削除しますか？\n※この操作は取り消せません。\n※関連するリンクやクラスター設定からも削除されます。")) return;
       const id = document.getElementById('edit-id').value;
